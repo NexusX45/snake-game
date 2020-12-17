@@ -2,7 +2,6 @@ var snake_width = 10;
 var snake_height = 10;
 
 var snake = 1;
-// snake.push(body);
 
 var posx = [10];
 var posy = [10];
@@ -13,12 +12,14 @@ var foodY = 50;
 var trailX, trailY;
 
 var step = 10;
-var interval = 200;
+var interval = 100;
+var points = 0;
 
 var id = setInterval(frame, interval);
 
 var root = document.getElementById("root");
 var rx = root.getContext("2d");
+var score = document.getElementById("score");
 
 //Movement booleans
 
@@ -44,12 +45,9 @@ window.addEventListener(
     if (event.defaultPrevented) {
       return; // Do nothing if the event was already processed
     }
-    console.log(event.key);
 
     switch (event.key) {
       case "ArrowRight":
-        // console.log("Right");
-
         if (left == false && right == false) {
           right = true;
           left = false;
@@ -60,8 +58,6 @@ window.addEventListener(
         break;
 
       case "ArrowLeft":
-        // console.log("Left");
-
         if (right == false && left == false) {
           right = false;
           left = true;
@@ -71,8 +67,6 @@ window.addEventListener(
         break;
 
       case "ArrowDown":
-        // console.log("Down");
-
         if (up == false && down == false) {
           right = false;
           left = false;
@@ -82,8 +76,6 @@ window.addEventListener(
         break;
 
       case "ArrowUp":
-        // console.log("Up");
-
         if (down == false && up == false) {
           right = false;
           left = false;
@@ -111,7 +103,10 @@ function resetFood() {
   while (foodY >= 760) {
     foodY = Math.floor(Math.random() * 100) * 10;
   }
-  interval -= 10;
+}
+
+function updateScore() {
+  points++;
 }
 function drawFood() {
   rx.fillStyle = "red";
@@ -120,6 +115,21 @@ function drawFood() {
   if (posx[0] == foodX && posy[0] == foodY) {
     addbody();
     resetFood();
+    updateScore();
+  }
+}
+
+function checkCollision() {
+  if (posx[0] > 1360 || posx[0] < 0 || posy[0] < 0 || posy[0] > 768) {
+    clearInterval(id);
+    rx.font = "50px Arial";
+    rx.fillText("Game Over!", 540, 280);
+  }
+
+  if (posx.indexOf(posx[0]) > 0 && posy.indexOf(posy[0] > 0)) {
+    clearInterval(id);
+    rx.font = "50px Arial";
+    rx.fillText("Game Over!", 540, 280);
   }
 }
 
@@ -128,8 +138,10 @@ function frame() {
   rx.clearRect(0, 0, 2000, 2000);
 
   var i;
-
+  checkCollision();
   drawFood();
+
+  score.innerHTML = "Score: " + points;
 
   if (right) {
     posx.unshift(posx[0] + step);
@@ -146,7 +158,6 @@ function frame() {
   }
 
   if (!add) {
-    console.log("pop");
     posx.pop();
     posy.pop();
   } else {
@@ -156,7 +167,4 @@ function frame() {
   for (i = 0; i < snake; i++) {
     rx.fillRect(posx[i], posy[i], snake_height, snake_width);
   }
-  console.log("Snake: " + snake);
-  console.log(posx);
-  console.log(posy);
 }
